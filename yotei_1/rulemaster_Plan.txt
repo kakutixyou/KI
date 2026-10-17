@@ -1,0 +1,21 @@
+=VSTACK("項目（AppSheet集計用）", MAP(A2:A, B2:B, D2:D, LAMBDA(ts, slot, choice, 
+  IF(ts="", "", 
+    IF(ISERR(SEARCH("予定", choice)), choice, 
+      LET(
+        m, TEXT(MONTH(ts), "0"),
+        d, TEXT(DAY(ts), "0"),
+        w, TEXT(INT((DAY(ts)-1)/7)+1, "0"),
+        dow, CHOOSE(WEEKDAY(ts), "日", "月", "火", "水", "木", "金", "土"),
+        matched, FILTER(
+          ルールマスタ!F2:F,
+          (ルールマスタ!A2:A="毎月") + ISNUMBER(SEARCH(","&m&",", ","&ルールマスタ!A2:A&",")),
+          (ルールマスタ!B2:B="すべて") + (TEXT(ルールマスタ!B2:B, "0")=d),
+          (ルールマスタ!C2:C="毎週") + (ルールマスタ!C2:C="すべて") + ISNUMBER(SEARCH(","&w&",", ","&ルールマスタ!C2:C&",")),
+          ルールマスタ!D2:D=dow,
+          ルールマスタ!E2:E=slot
+        ),
+        IFNA(INDEX(matched, 1), "該当なし（要確認）")
+      )
+    )
+  )
+)))
